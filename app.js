@@ -3,7 +3,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const ejs = require('ejs');
-const encryption = require('mongoose-encryption');
+var session = require('express-session');
+// const md5 = require('md5');
+// const bcrypt = require('bcrypt');
+// const saltRounds = 10;
+//mongoose-encryption module is low level security so we use md5 instead
+//const encryption = require('mongoose-encryption');
 
 
 const app = express();
@@ -18,7 +23,8 @@ const user_schema = new mongoose.Schema({
     email: String,
     password: String
 })
-user_schema.plugin(encryption,{secret: process.env.SECRET, encryptedFields:['password']});
+//this commented code is used for mongoose-encryption package
+//user_schema.plugin(encryption,{secret: process.env.SECRET, encryptedFields:['password']});
 
 const user = mongoose.model("User",user_schema);
 
@@ -37,28 +43,37 @@ app.route("/register")
     res.render("register");
 })
 .post((req, res) => {
-    let new_user = new user({
-        email: req.body.username,
-        password: req.body.password
-    })
-    new_user.save().then(() => {
-        console.log("successfully registered!");
-    })
-    res.render("secrets");
+    //code used for bcrypt encryption   
+    // bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+    //     let new_user = new user({
+    //         email: req.body.username,
+    //         password: hash
+    //     })
+    //     new_user.save().then(() => {
+    //         console.log("successfully registered!");
+    //     })
+    //     res.render("secrets");
+    // })
+    
 });
 
 app.post("/login", (req, res) => {
-    user.findOne({email:req.body.username}).then((docs)=>{
-        if(docs.password === req.body.password){
-            console.log("docs found!");
-            console.log(docs);
-            res.render("secrets");
-        }
-        else{
-            console.log("No docs found!");
-            res.render("login");
-        }
-    });
+    
+    //code used for bcrypt login
+    // user.findOne({email:req.body.username}).then((docs)=>{
+    //     bcrypt.compare(req.body.password, docs.password, function(err, result) {
+    //         if(result === true){
+    //             console.log("docs found!");
+    //             console.log(docs);
+    //             res.render("secrets");
+    //         }
+    //         else{
+    //             console.log("No docs found!");
+    //             res.render("login");
+    //         }
+    //     });
+        
+    // });
 })
 
 
